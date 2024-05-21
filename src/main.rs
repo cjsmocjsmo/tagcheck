@@ -1,6 +1,6 @@
 use walkdir::WalkDir;
 use id3::Tag;
-use std::fs;
+// use std::fs;
 
 pub fn walk_additional_dir(apath: String) {
     let mut index = 0;
