@@ -1,6 +1,6 @@
 use walkdir::WalkDir;
 use id3::Tag;
-// use std::fs;
+use std::fs;
 
 pub fn walk_additional_dir(apath: String) {
     let mut index = 0;
@@ -25,9 +25,9 @@ pub fn walk_additional_dir(apath: String) {
                     let dest_path = "/home/pi/needs_work";
                     let dest_file = format!("{}/{}", dest_path, e.file_name().to_string_lossy());
                     println!("{}", dest_file);
-                    // fs::rename(&fname, &dest_file).unwrap_or_else(|err| {
-                    //     eprintln!("Failed to move file: {}", err);
-                    // });
+                    fs::rename(&fname, &dest_file).unwrap_or_else(|err| {
+                        eprintln!("Failed to move file: {}", err);
+                    });
                 }
                 index = index + 1;
             }
