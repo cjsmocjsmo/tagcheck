@@ -4,6 +4,7 @@ use id3::Tag;
 
 pub fn walk_additional_dir(apath: String) {
     let mut index = 0;
+    let mut notagcount = 0;
     for e in WalkDir::new(apath)
         .follow_links(true)
         .into_iter()
@@ -20,6 +21,7 @@ pub fn walk_additional_dir(apath: String) {
                     // Process the tag as needed
                 } else {
                     // No tag information found
+                    notagcount = notagcount + 1;
                     let dest_path = "/home/pi/needs_work";
                     let dest_file = format!("{}/{}", dest_path, e.file_name().to_string_lossy());
                     println!("{}", dest_file);
@@ -31,6 +33,7 @@ pub fn walk_additional_dir(apath: String) {
             }
         }
     }
+    println!("{}", notagcount)  
 }
 
 fn main() {
