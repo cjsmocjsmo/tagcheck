@@ -37,5 +37,5 @@ pub fn walk_additional_dir(apath: String) {
 }
 
 fn main() {
-    walk_additional_dir("/home/pi/Music".to_string());
+    walk_additional_dir("/home/pi/Music/needs_work".to_string());
 }
