@@ -90,9 +90,10 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
     let track = tag.track().expect(&apath);
     
     let rawgenre1 = tag.genre();
+    let default: &'static str = "(148)";
     let rawgenre = match rawgenre1 {
         Some(genre) => genre,
-        None => "(148)",
+        None => default,
         // None => {
         //     println!("Genre tag is missing\n\t{:?}", apath.clone());
         //     "Unknown".to_string()
