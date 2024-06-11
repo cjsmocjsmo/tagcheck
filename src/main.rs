@@ -82,7 +82,11 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
     let artist = tag.artist().expect(&apath.clone());
     let album = tag.album().expect(&apath);
     let song = tag.title().expect(&apath);
-    let cd = tag.disc().expect(&apath);
+    let cd1 = tag.disc();
+    let cd = match cd1 {
+        Some(cd) => cd.to_string(),
+        None => "01".to_string(),
+    };
     let track = tag.track().expect(&apath);
     
     let rawgenre = tag.genre().expect(&apath);
