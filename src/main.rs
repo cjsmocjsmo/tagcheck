@@ -99,10 +99,13 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
         //     "(148)"
         // },
     };
+    println!("Raw genre: {:?}", rawgenre);
     let rg1 = rawgenre.trim();
+    println!("rg1: {:?}", rg1);
     let rg2 = rg1.replace("(", "").replace(")", "");
+    println!("rg2: {:?}", rg2);
     let non_numeric_removed = rg2.chars().filter(|c| c.is_digit(10)).collect::<String>();
-    println!("Raw genre: {:?}", &non_numeric_removed);
+    println!("non_numeric_removed: {:?}", &non_numeric_removed);
     let rg3 = match non_numeric_removed.parse::<u32>() {
         Ok(num) => num,
         Err(e) => match e.kind() {
