@@ -101,6 +101,7 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
     let rg1 = rawgenre.trim();
     let rg2 = rg1.replace("(", "").replace(")", "");
     let non_numeric_removed = rg2.chars().filter(|c| c.is_digit(10)).collect::<String>();
+    println!("Raw genre: {:?}", &non_numeric_removed);
     let rg3 = match non_numeric_removed.parse::<u32>() {
         Ok(num) => num,
         Err(e) => match e.kind() {
