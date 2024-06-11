@@ -89,7 +89,15 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
     };
     let track = tag.track().expect(&apath);
     
-    let rawgenre = tag.genre().expect(&apath);
+    let rawgenre1 = tag.genre();
+    let rawgenre = match rawgenre1 {
+        Some(genre) => genre,
+        None => "(148)",
+        // None => {
+        //     println!("Genre tag is missing\n\t{:?}", apath.clone());
+        //     "Unknown".to_string()
+        // },
+    };
     let rg1 = rawgenre.trim();
     let rg2 = rg1.replace("(", "").replace(")", "");
     let non_numeric_removed = rg2.chars().filter(|c| c.is_digit(10)).collect::<String>();
