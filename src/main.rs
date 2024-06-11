@@ -104,21 +104,21 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
     println!("rg1: {:?}", rg1);
     let rg2 = rg1.replace("(", "").replace(")", "");
     println!("rg2: {:?}", rg2);
-    let non_numeric_removed = rg2.chars().filter(|c| c.is_digit(10)).collect::<String>();
-    println!("non_numeric_removed: {:?}", &non_numeric_removed);
-    let rg3 = match non_numeric_removed.parse::<u32>() {
-        Ok(num) => num,
-        Err(e) => match e.kind() {
-            std::num::IntErrorKind::Empty => {
-                // Handle the empty case, e.g., by using a default value or logging an error
-                println!("Genre string was empty after processing\n\t{:?}", apath.clone());
-                148 // Assuming 0 as a default value, adjust as necessary
-            },
-            _ => panic!("Failed to parse genre: {:?}", e),
-        },
-    };
+    // let non_numeric_removed = rg2.chars().filter(|c| c.is_digit(10)).collect::<String>();
+    // println!("non_numeric_removed: {:?}", &non_numeric_removed);
+    // let rg3 = match non_numeric_removed.parse::<u32>() {
+    //     Ok(num) => num,
+    //     Err(e) => match e.kind() {
+    //         std::num::IntErrorKind::Empty => {
+    //             // Handle the empty case, e.g., by using a default value or logging an error
+    //             println!("Genre string was empty after processing\n\t{:?}", apath.clone());
+    //             148 // Assuming 0 as a default value, adjust as necessary
+    //         },
+    //         _ => panic!("Failed to parse genre: {:?}", e),
+    //     },
+    // };
 
-    let genre = genre_code_to_name(rg3);
+    let genre = rawgenre;
 
     // println!("Raw genre: {:?}", &rg3);
     // let genre1 = rawgenre.parse::<u32>().unwrap();
