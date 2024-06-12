@@ -1,9 +1,6 @@
 use std::env;
-use std::fs;
 use std::path::Path;
 use id3::{Tag, TagLike};
-// use std::path::PathBuf;
-// use std::process::Command;
 use walkdir::WalkDir;
 
 fn main() {
@@ -25,21 +22,9 @@ fn main() {
     for mediafile in mediafiles {
         totalcount += 1;
         let tag_info = get_tag_info_mp3(mediafile.clone());
-        match tag_info {
-            // Ok((artist, album, title, cd, track, genre)) => {
-            //     println!("\nArtist: {}\n", artist);
-            //     println!("Album: {}\n", album);
-            //     println!("Song: {}\n", title);
-            //     println!("CD: {}\n", cd);
-            //     println!("Track: {}\n", track);
-            //     println!("Genre: {}\n", genre);
-            // }
-            Ok((_, _, _, _, _, _)) => (),
-            Err(e) => {
-                println!("Tag Info is missing\n\t{:?}", mediafile.clone());
-                println!("Error: {}", e);
-                badcount += 1;
-            }
+        if !tag_info {
+            badcount += 1;
+        
         }
     }
     println!("Total media files with missing tag info: {}", badcount);
@@ -62,64 +47,49 @@ pub fn find_media(dir_path: &String) -> Vec<String> {
     media_files
 }
 
-pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String, String, String), std::io::Error> {
+// pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String, String, String), std::io::Error> {
+    pub fn get_tag_info_mp3(apath: String) -> bool {
     let tag = match Tag::read_from_path(apath.clone()) {
         Ok(tag) => tag,
         Err(_) => {
             println!("No ID3 tag found for: {:?}", apath.clone());
-            let target_dir = Path::new("/home/charliepi/needs_work");
-            if !target_dir.exists() {
-                fs::create_dir_all(target_dir)?;
-            }
-            fs::rename(apath.clone(), target_dir.join(Path::new(&apath).file_name().unwrap()))?;
-            return Err(std::io::Error::new(
-                std::io::ErrorKind::Other,
-                "No ID3 tag found",
-            ));
+            return false;
         }
     };
 
-    let artist = tag.artist().expect(&apath.clone());
-    let album = tag.album().expect(&apath);
-    let song = tag.title().expect(&apath);
+    let mut results = true;
 
-    let cd = match tag.disc() {
-        Some(cd) => cd.to_string(),
-        None => "1".to_string(),
-    };
+    if tag.artist().unwrap().is_empty() {
+        println!("Artist tag is missing\n\t{:?}", apath.clone());
+        results = false;
+    }
 
-    let track = tag.track().expect(&apath);
+    if tag.album().unwrap().is_empty() {
+        println!("Album tag is missing\n\t{:?}", apath.clone());
+        results = false;
+    }
 
-    let genre = match tag.genre() {
-        Some(genre) => genre,
-        None => "Unknown",
-    };
-    
-    // let rawgenre1 = tag.genre();
-    // let genre = match rawgenre1 {
-    //     Some(genre) => genre,
-    //     None => "Unknown",
-    //     // None => {
-    //     //     println!("Genre tag is missing\n\t{:?}", apath.clone());
-    //     //     "(148)"
-    //     // },
-    // };
-    println!("Artist: {:?}", artist);
-    println!("Album: {:?}", album);
-    println!("Song: {:?}", song);
-    println!("CD: {:?}", cd);
-    println!("Track: {:?}", track);
-    println!("Genre: {:?}", genre);
-    
+    if tag.title().unwrap().is_empty() {
+        println!("Song tag is missing\n\t{:?}", apath.clone());
+        results = false;
+    }
 
-    Ok((
-        artist.to_string(),
-        album.to_string(),
-        song.to_string(),
-        cd.to_string(),
-        track.to_string(),
-        genre.to_string(),
-    ))
+    if tag.disc().is_none() {
+        println!("CD tag is missing\n\t{:?}", apath.clone());
+        results = false;
+    }
+
+    if tag.track().is_none() {
+        println!("Track tag is missing\n\t{:?}", apath.clone());
+        results = false;
+    }
+
+    if tag.genre().is_none() {
+        println!("Genre tag is missing\n\t{:?}", apath.clone());
+        results = false;
+    }
+
+    results
 
 }
 
