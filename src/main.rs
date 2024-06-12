@@ -85,7 +85,7 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
 
     let cd = match tag.disc() {
         Some(cd) => cd.to_string(),
-        None => "01".to_string(),
+        None => "1".to_string(),
     };
 
     let track = tag.track().expect(&apath);
@@ -104,8 +104,13 @@ pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String
     //     //     "(148)"
     //     // },
     // };
-    println!("Genre: {:?}", genre);
+    println!("Artist: {:?}", artist);
+    println!("Album: {:?}", album);
+    println!("Song: {:?}", song);
     println!("CD: {:?}", cd);
+    println!("Track: {:?}", track);
+    println!("Genre: {:?}", genre);
+    
 
     Ok((
         artist.to_string(),
