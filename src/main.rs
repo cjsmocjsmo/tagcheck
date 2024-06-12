@@ -74,10 +74,10 @@ pub fn find_media(dir_path: &String) -> Vec<String> {
         results = false;
     }
 
-    if tag.disc().is_none() {
-        println!("CD tag is missing\n\t{:?}", apath.clone());
-        results = false;
-    }
+    // if tag.disc().is_none() {
+    //     println!("CD tag is missing\n\t{:?}", apath.clone());
+    //     results = false;
+    // }
 
     if tag.track().is_none() {
         println!("Track tag is missing\n\t{:?}", apath.clone());
