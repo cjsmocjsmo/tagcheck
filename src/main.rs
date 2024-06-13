@@ -59,17 +59,17 @@ pub fn find_media(dir_path: &String) -> Vec<String> {
 
     let mut results = true;
 
-    if tag.artist().unwrap().is_empty() {
+    if tag.artist().unwrap_or("").is_empty() {
         println!("Artist tag is missing\n\t{:?}", apath.clone());
         results = false;
     }
 
-    if tag.album().unwrap().is_empty() {
+    if tag.album().unwrap_or("").is_empty() {
         println!("Album tag is missing\n\t{:?}", apath.clone());
         results = false;
     }
 
-    if tag.title().unwrap().is_empty() {
+    if tag.title().unwrap_or("").is_empty() {
         println!("Song tag is missing\n\t{:?}", apath.clone());
         results = false;
     }
