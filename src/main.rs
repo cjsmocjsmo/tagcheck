@@ -52,7 +52,7 @@ pub fn find_media(dir_path: &String) -> Vec<String> {
     let tag = match Tag::read_from_path(apath.clone()) {
         Ok(tag) => tag,
         Err(_) => {
-            println!("\n\nNo ID3 tag found for:\n\t {:?}", apath.clone());
+            println!("\n\nNo ID3 tag found for:\n {:?}", apath.clone());
             return false;
         }
     };
@@ -60,17 +60,17 @@ pub fn find_media(dir_path: &String) -> Vec<String> {
     let mut results = true;
 
     if tag.artist().unwrap_or("").is_empty() {
-        println!("\n\nArtist tag is missing\n\t{:?}", apath.clone());
+        println!("\n\nArtist tag is missing\n{:?}", apath.clone());
         results = false;
     }
 
     if tag.album().unwrap_or("").is_empty() {
-        println!("\n\nAlbum tag is missing\n\t{:?}", apath.clone());
+        println!("\n\nAlbum tag is missing\n{:?}", apath.clone());
         results = false;
     }
 
     if tag.title().unwrap_or("").is_empty() {
-        println!("\n\nSong tag is missing\n\t{:?}", apath.clone());
+        println!("\n\nSong tag is missing\n{:?}", apath.clone());
         results = false;
     }
 
@@ -80,12 +80,12 @@ pub fn find_media(dir_path: &String) -> Vec<String> {
     // }
 
     if tag.track().is_none() {
-        println!("\n\nTrack tag is missing\n\t{:?}", apath.clone());
+        println!("\n\nTrack tag is missing\n{:?}", apath.clone());
         results = false;
     }
 
     if tag.genre().is_none() {
-        println!("\n\nGenre tag is missing\n\t{:?}", apath.clone());
+        println!("\n\nGenre tag is missing\n{:?}", apath.clone());
         results = false;
     }
 
