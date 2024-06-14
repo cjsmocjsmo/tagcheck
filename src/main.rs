@@ -52,7 +52,7 @@ pub fn find_media(dir_path: &String) -> Vec<String> {
     let tag = match Tag::read_from_path(apath.clone()) {
         Ok(tag) => tag,
         Err(_) => {
-            println!("No ID3 tag found for: {:?}", apath.clone());
+            println!("\n\nNo ID3 tag found for:\n\t {:?}", apath.clone());
             return false;
         }
     };
