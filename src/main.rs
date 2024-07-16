@@ -111,6 +111,17 @@ fn main() {
                         "Artist: {}\nAlbum: {}\nSong: {}\nCD: {}\nTrack: {}\nGenre: {}\n",
                         art, alb, song, cd, track, genre
                     );
+                    if write_tag {
+                        let _ = utils::write_tag_mp3(
+                            badfile.clone(),
+                            art,
+                            alb,
+                            song,
+                            cd,
+                            track,
+                            genre,
+                        );
+                    }
                 }
                 Err(e) => {
                     println!("Tag Info is missing\n\t{:?}", badfile.clone());

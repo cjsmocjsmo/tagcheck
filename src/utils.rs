@@ -214,3 +214,71 @@ pub fn rm_special_chars(astring: String) -> String {
     let a7 = capitalize_words(a6);
     a7
 }
+
+pub fn write_tag_mp3(
+    apath: String,
+    artist: String,
+    album: String,
+    title: String,
+    cd: String,
+    track: String,
+    genre: String,
+) -> Result<(), std::io::Error> {
+    let mut tag = match Tag::read_from_path(apath.clone()) {
+        Ok(tag) => tag,
+        Err(_) => {
+            println!("No ID3 tag found for: {:?}", apath.clone());
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "No ID3 tag found",
+            ));
+        }
+    };
+    let cd1: Result<u32, _> = cd.parse();
+    let cd = match cd1 {
+        Ok(num) => num,
+        Err(_) => {
+            println!("CD is not a number: {:?}", cd);
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "CD is not a number",
+            ));
+        }
+    };
+    let track1: Result<u32, _> = track.parse();
+    let track = match track1 {
+        Ok(num) => num,
+        Err(_) => {
+            println!("Track is not a number: {:?}", track);
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Track is not a number",
+            ));
+        }
+    };
+
+    tag.set_artist(&artist);
+    tag.set_album(&album);
+    tag.set_title(&title);
+    tag.set_disc(cd);
+    tag.set_track(track);
+    tag.set_genre(&genre);
+
+    let write_tag_result = tag.write_to_path(apath.clone(), id3::Version::Id3v24);
+    match write_tag_result {
+        Ok(_) => {
+            println!("Tag written to: {:?}", apath.clone());
+        }
+        Err(e) => {
+            println!("Failed to write tag to: {:?}", apath.clone());
+            println!("Error: {}", e);
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                "Failed to write tag",
+            ));
+        }
+    }
+
+
+    Ok(())
+}
