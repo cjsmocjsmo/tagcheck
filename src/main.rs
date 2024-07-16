@@ -1,13 +1,52 @@
+use regex::Regex;
 use std::env;
 use std::path::Path;
-use id3::{Tag, TagLike};
-use walkdir::WalkDir;
+
+mod genrecodes;
+mod utils;
+
+// #[allow(non_snake_case)]
+// #[derive(Debug)]
+// pub struct MediaInfo {
+//     artist: String,
+//     album: String,
+//     title: String,
+//     cd: String,
+//     track: String,
+//     genre: String,
+//     path: String,
+// }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let mut sp_char_check = false;
+    let mut sp_char_fix = false;
+    let mut write_tag = false;
+
     if args.len() < 2 {
         println!("Please provide a directory path as an argument.");
         return;
+    }
+
+    for arg in &args {
+        if arg == "-f" || arg == "--special-char-fix" {
+            sp_char_fix = true;
+        }
+        if arg == "-s" || arg == "--special-char-check" {
+            sp_char_check = true;
+        }
+        if arg == "-w" || arg == "--write-tag" {
+            write_tag = true;
+        }
+        if arg == "-h" || arg == "--help" {
+            println!("Usage: tagcheck [options] <directory path>");
+            println!("\nOptions:");
+            println!("\t-f, --special-char-fix\t\tFix special characters in tags");
+            println!("\t-s, --special-char-check\tCheck for special characters in tags");
+            println!("\t-w, --write-tag\t\t\tWrite tag info to file");
+            println!("\t-h, --help\t\t\tDisplay this help message");
+            return;
+        }
     }
 
     let dir_path = &args[1];
@@ -16,80 +55,75 @@ fn main() {
         return;
     }
 
-    let mediafiles = find_media(&dir_path);
-    let mut totalcount = 0;
+    let mediafiles = utils::find_media(&dir_path);
+    // let mut totalcount = 0;
     let mut badcount = 0;
-    for mediafile in mediafiles {
-        totalcount += 1;
-        let tag_info = get_tag_info_mp3(mediafile.clone());
-        if !tag_info {
-            badcount += 1;
-        
+    let mut badfiles = Vec::new();
+    for mediafile in mediafiles.clone() {
+        // totalcount += 1;
+        let tag_info = utils::get_tag_info_mp3(mediafile.clone());
+        match tag_info {
+            Ok((artist, album, title, cd, track, genre)) => {
+                let re = Regex::new(r"[^a-zA-Z0-9 \-']").unwrap();
+                let re1 = Regex::new(r"^\d").unwrap();
+                let re2 = Regex::new(r"^\d{1,2}").unwrap();
+                if sp_char_check {
+                    if re.is_match(&artist) {
+                        badfiles.push(mediafile.clone());
+                        println!("\nArtist has special characters:\n {}", artist);
+                    }
+                    if re.is_match(&album) {
+                        badfiles.push(mediafile.clone());
+                        println!("\nAlbum has special characters:\n {}\n", album);
+                    }
+                    if re.is_match(&title) {
+                        badfiles.push(mediafile.clone());
+                        println!("\nSong has special characters:\n {}\n", title);
+                    }
+                    if !re1.is_match(&cd) {
+                        badfiles.push(mediafile.clone());
+                        println!("\nCD is not formated correctly:\n {}\n", cd);
+                    }
+                    if !re2.is_match(&track) {
+                        badfiles.push(mediafile.clone());
+                        println!("\nTrack is not formated correctly:\n {}\n", track);
+                    }
+                    println!("Genre: {}\n", genre);
+                }
+            }
+            Err(e) => {
+                println!("Tag Info is missing\n\t{:?}", mediafile.clone());
+                println!("Error: {}", e);
+                badcount += 1;
+            }
         }
     }
+    // let mut newtaginfo = Vec::new();
+    if sp_char_fix {
+        for badfile in badfiles.clone() {
+            let taginfo2 = utils::get_tag_info_mp3(badfile.clone());
+            match taginfo2 {
+                Ok((artist, album, title, cd, track, genre)) => {
+                    let art = utils::rm_special_chars(artist);
+                    let alb = utils::rm_special_chars(album);
+                    let song = utils::rm_special_chars(title);
+                    println!(
+                        "Artist: {}\nAlbum: {}\nSong: {}\nCD: {}\nTrack: {}\nGenre: {}\n",
+                        art, alb, song, cd, track, genre
+                    );
+                }
+                Err(e) => {
+                    println!("Tag Info is missing\n\t{:?}", badfile.clone());
+                    println!("Error: {}", e);
+                    badcount += 1;
+                }
+            }
+        }
+    }
+
+    // println!("{:#?}", newtaginfo);
+
+    // println!("Bad files {:#?}", badfiles.clone().len());
     println!("Total media files with missing tag info: {}", badcount);
-    println!("Total media files scanned: {}", totalcount);
+    println!("Total media files scanned: {}", mediafiles.clone().len());
 }
-
-pub fn find_media(dir_path: &String) -> Vec<String> {
-    println!("Dir path: {:?}", dir_path);
-    let mut media_files = Vec::new();
-    for entry in WalkDir::new(dir_path) {
-        let entry = entry.unwrap();
-        if entry.path().extension().map_or(false, |ext| {
-            ext == "mp3"
-                || ext == "MP3"
-        }) {
-            media_files.push(entry.path().to_string_lossy().into_owned());
-        }
-    }
-
-    media_files
-}
-
-// pub fn get_tag_info_mp3(apath: String) -> Result<(String, String, String, String, String, String), std::io::Error> {
-    pub fn get_tag_info_mp3(apath: String) -> bool {
-    let tag = match Tag::read_from_path(apath.clone()) {
-        Ok(tag) => tag,
-        Err(_) => {
-            println!("\n\nNo ID3 tag found for:\n {:?}", apath.clone());
-            return false;
-        }
-    };
-
-    let mut results = true;
-
-    if tag.artist().unwrap_or("").is_empty() {
-        println!("\n\nArtist tag is missing\n{:?}", apath.clone());
-        results = false;
-    }
-
-    if tag.album().unwrap_or("").is_empty() {
-        println!("\n\nAlbum tag is missing\n{:?}", apath.clone());
-        results = false;
-    }
-
-    if tag.title().unwrap_or("").is_empty() {
-        println!("\n\nSong tag is missing\n{:?}", apath.clone());
-        results = false;
-    }
-
-    // if tag.disc().is_none() {
-    //     println!("CD tag is missing\n\t{:?}", apath.clone());
-    //     results = false;
-    // }
-
-    if tag.track().is_none() {
-        println!("\n\nTrack tag is missing\n{:?}", apath.clone());
-        results = false;
-    }
-
-    if tag.genre().is_none() {
-        println!("\n\nGenre tag is missing\n{:?}", apath.clone());
-        results = false;
-    }
-
-    results
-
-}
-
