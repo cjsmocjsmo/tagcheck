@@ -235,7 +235,7 @@ pub fn write_tag_mp3(
         }
     };
     let cd1: Result<u32, _> = cd.parse();
-    let cd = match cd1 {
+    let cd2 = match cd1 {
         Ok(num) => num,
         Err(_) => {
             println!("CD is not a number: {:?}", cd);
@@ -246,7 +246,7 @@ pub fn write_tag_mp3(
         }
     };
     let track1: Result<u32, _> = track.parse();
-    let track = match track1 {
+    let track2 = match track1 {
         Ok(num) => num,
         Err(_) => {
             println!("Track is not a number: {:?}", track);
@@ -260,8 +260,8 @@ pub fn write_tag_mp3(
     tag.set_artist(&artist);
     tag.set_album(&album);
     tag.set_title(&title);
-    tag.set_disc(cd);
-    tag.set_track(track);
+    tag.set_disc(cd2);
+    tag.set_track(track2);
     tag.set_genre(&genre);
 
     let write_tag_result = tag.write_to_path(apath.clone(), id3::Version::Id3v24);
