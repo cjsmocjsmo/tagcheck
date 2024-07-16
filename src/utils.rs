@@ -192,6 +192,38 @@ pub fn repl_sp7(astring: String) -> String {
     }
 }
 
+pub fn repl_sp8(astring: String) -> String {
+    if astring.contains(":") {
+        return astring.replace(":", "");
+    } else {
+        return astring.to_string();
+    }
+}
+
+pub fn repl_sp9(astring: String) -> String {
+    if astring.contains("?") {
+        return astring.replace("?", "");
+    } else {
+        return astring.to_string();
+    }
+}
+
+pub fn repl_sp10(astring: String) -> String {
+    if astring.contains("!") {
+        return astring.replace("!", "");
+    } else {
+        return astring.to_string();
+    }
+}
+
+pub fn repl_sp11(astring: String) -> String {
+    if astring.contains("  ") {
+        return astring.replace("  ", " ");
+    } else {
+        return astring.to_string();
+    }
+}
+
 pub fn capitalize_words(text: String) -> String {
     text.to_lowercase()
         .split_whitespace()
@@ -211,8 +243,12 @@ pub fn rm_special_chars(astring: String) -> String {
     let a4 = repl_sp5(a3);
     let a5 = repl_sp6(a4);
     let a6 = repl_sp7(a5);
-    let a7 = capitalize_words(a6);
-    a7
+    let a7 = repl_sp8(a6);
+    let a8 = repl_sp9(a7);
+    let a9 = repl_sp10(a8);
+    let a10 = repl_sp11(a9);
+    let a11 = capitalize_words(a10);
+    a11
 }
 
 pub fn write_tag_mp3(
