@@ -224,6 +224,14 @@ pub fn repl_sp11(astring: String) -> String {
     }
 }
 
+pub fn repl_spl12(astring: String) -> String {
+    if astring.contains("\"") {
+        return astring.replace("\"", "");
+    } else {
+        return astring.to_string();
+    }
+}
+
 pub fn capitalize_words(text: String) -> String {
     text.to_lowercase()
         .split_whitespace()
@@ -247,8 +255,9 @@ pub fn rm_special_chars(astring: String) -> String {
     let a8 = repl_sp9(a7);
     let a9 = repl_sp10(a8);
     let a10 = repl_sp11(a9);
-    let a11 = capitalize_words(a10);
-    a11
+    let a11 = repl_spl12(a10);
+    let a12 = capitalize_words(a11);
+    a12
 }
 
 pub fn write_tag_mp3(
