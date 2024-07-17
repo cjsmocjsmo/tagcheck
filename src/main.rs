@@ -2,20 +2,9 @@ use regex::Regex;
 use std::env;
 use std::path::Path;
 
+
 mod genrecodes;
 mod utils;
-
-// #[allow(non_snake_case)]
-// #[derive(Debug)]
-// pub struct MediaInfo {
-//     artist: String,
-//     album: String,
-//     title: String,
-//     cd: String,
-//     track: String,
-//     genre: String,
-//     path: String,
-// }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -63,7 +52,7 @@ fn main() {
         // totalcount += 1;
         let tag_info = utils::get_tag_info_mp3(mediafile.clone());
         match tag_info {
-            Ok((artist, album, title, cd, track, genre)) => {
+            Ok((artist, album, title, cd, track, _genre)) => {
                 let re = Regex::new(r"[^a-zA-Z0-9 \-']").unwrap();
                 let re1 = Regex::new(r"^\d").unwrap();
                 let re2 = Regex::new(r"^\d{1,2}").unwrap();
@@ -88,7 +77,7 @@ fn main() {
                         badfiles.push(mediafile.clone());
                         println!("\nTrack is not formated correctly:\n {}\n", track);
                     }
-                    println!("Genre: {}\n", genre);
+                    // println!("Genre: {}\n", genre);
                 }
             }
             Err(e) => {

@@ -1,7 +1,8 @@
 use crate::genrecodes;
 use id3::{Tag, TagLike};
 use walkdir::WalkDir;
-// use unicode_segmentation::UnicodeSegmentation;
+// use encoding_rs::{WINDOWS_1252, UTF_8};
+// use std::string::FromUtf8Error;
 
 pub fn find_media(dir_path: &String) -> Vec<String> {
     println!("Dir path: {:?}", dir_path);
@@ -152,7 +153,7 @@ pub fn repl_sp2(astring: String) -> String {
 
 pub fn repl_sp3(astring: String) -> String {
     if astring.contains("’") {
-        return astring.replace("’", "'");
+        return astring.replace("’", "");
     } else {
         return astring.to_string();
     };
@@ -168,7 +169,7 @@ pub fn repl_sp4(astring: String) -> String {
 
 pub fn repl_sp5(astring: String) -> String {
     if astring.contains(" - ") {
-        return astring.replace(" - ", "_-_");
+        return astring.replace(" - ", " ");
     } else {
         return astring.to_string();
     };
@@ -243,6 +244,11 @@ pub fn capitalize_words(text: String) -> String {
         .join(" ")
 }
 
+pub fn convert_to_utf8(input: &str) -> Result<String, std::string::FromUtf8Error> {
+    let bytes = input.as_bytes();
+    String::from_utf8(bytes.to_vec())
+}
+
 pub fn rm_special_chars(astring: String) -> String {
     let a0 = repl_sp1(astring);
     let a1 = repl_sp2(a0);
@@ -256,8 +262,15 @@ pub fn rm_special_chars(astring: String) -> String {
     let a9 = repl_sp10(a8);
     let a10 = repl_sp11(a9);
     let a11 = repl_spl12(a10);
-    let a12 = capitalize_words(a11);
-    a12
+    let a12 = match convert_to_utf8(&a11.as_str()) {
+        Ok(s) => s,
+        Err(e) => {
+            println!("Failed to convert to UTF-8: {:?}", e);
+            return a11;
+        }
+    };
+    let a13 = capitalize_words(a12);
+    a13
 }
 
 pub fn write_tag_mp3(
